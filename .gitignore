@@ -1,0 +1,4 @@
+.env
+.idea
+team_finder.sql
+tf.dump.sql

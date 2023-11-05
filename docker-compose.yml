@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  db:
+    container_name: postgres
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+  server:
+    container_name: team-finder-server
+    build:
+      context: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "db"
+volumes:
+  postgres-db:
