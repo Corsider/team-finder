@@ -13,8 +13,8 @@ func setup(c *gin.Context) {
 
 func getUserById(c *gin.Context) {
 	userid := c.Param("id")
-	id, _ := strconv.Atoi(userid)
-	row := DB.QueryRow(fmt.Sprintf("select * from users where user_id=%s", id))
+	//id, _ := strconv.Atoi(userid)
+	row := DB.QueryRow(fmt.Sprintf("select * from users where user_id=%s", userid))
 	var user User
 	err := row.Scan(&user.UserId, &user.Name, &user.Nickname, &user.Rate, &user.Description,
 		&user.Login, &user.Password)
@@ -44,7 +44,9 @@ func getTagsByUser(c *gin.Context) {
 		tags := []Tag{}
 		for rows.Next() {
 			var tag Tag
-			rows.Scan(&tag.TagID, &tag.GlobalTagID, &tag.Activity)
+			rows.Scan(&tag.TagID)
+			row := DB.QueryRow(fmt.Sprintf("select * from tag where tag_id=%s", strconv.Itoa(tag.TagID)))
+			row.Scan(&tag.TagID, &tag.Activity, &tag.GlobalTagID)
 			tags = append(tags, tag)
 		}
 		c.JSON(200, gin.H{
@@ -85,7 +87,9 @@ func getTeamsByUser(c *gin.Context) {
 	} else {
 		for rows.Next() {
 			var team Team
-			rows.Scan(&team.TeamID, &team.Name, &team.Rate, &team.Description, &team.Rules, &team.RegDate, &team.Place)
+			rows.Scan(&team.TeamID)
+			row := DB.QueryRow(fmt.Sprintf("select * from team where team_id=%s", strconv.Itoa(team.TeamID)))
+			row.Scan(&team.TeamID, &team.Name, &team.Rate, &team.Description, &team.Rules, &team.RegDate, &team.Place)
 			teams = append(teams, team)
 		}
 		c.JSON(200, gin.H{
@@ -97,7 +101,7 @@ func getTeamsByUser(c *gin.Context) {
 func getTeamById(c *gin.Context) {
 	ids := c.Param("id")
 	var team Team
-	row := DB.QueryRow(fmt.Sprintf("SELECT * from teams where team_id=%s", ids))
+	row := DB.QueryRow(fmt.Sprintf("SELECT * from team where team_id=%s", ids))
 	err := row.Scan(&team.TeamID, &team.Name, &team.Rate, &team.Description, &team.Rules, &team.RegDate, &team.Place)
 	if err != nil {
 		log.Println(err)
@@ -114,7 +118,7 @@ func getTeamById(c *gin.Context) {
 func getTagsByTeam(c *gin.Context) {
 	ids := c.Param("id")
 	tags := []Tag{}
-	rows, err := DB.Query(fmt.Sprintf("select tag_id from teams_tags where tag_id=%s", ids))
+	rows, err := DB.Query(fmt.Sprintf("select tag_id from team_tags where team_id=%s", ids))
 	if err != nil {
 		log.Println(err)
 		c.JSON(500, gin.H{
@@ -123,7 +127,9 @@ func getTagsByTeam(c *gin.Context) {
 	} else {
 		for rows.Next() {
 			var tag Tag
-			rows.Scan(&tag.TagID, &tag.GlobalTagID, &tag.Activity)
+			rows.Scan(&tag.TagID)
+			row := DB.QueryRow(fmt.Sprintf("select * from tag where tag_id=%s", strconv.Itoa(tag.TagID)))
+			row.Scan(&tag.TagID, &tag.Activity, &tag.GlobalTagID)
 			tags = append(tags, tag)
 		}
 		c.JSON(200, gin.H{
