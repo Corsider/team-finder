@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"strconv"
+	"team-finder/services"
 )
 
 func setup(c *gin.Context) {
@@ -294,5 +295,113 @@ func getAllUsers(c *gin.Context) {
 			users = append(users, usr)
 		}
 		c.JSON(200, users)
+	}
+}
+
+func regUser(c *gin.Context) {
+	var usr User
+	c.BindJSON(&usr)
+	rows, err := DB.Query(fmt.Sprintf("SELECT nickname FROM users WHERE nickname='%s' OR login='%s'", usr.Nickname, usr.Login))
+	if err != nil {
+		log.Println(err)
+		c.JSON(500, gin.H{
+			"server": -1,
+		})
+		return
+	}
+
+	counter := 0
+	for rows.Next() {
+		counter += 1
+	}
+
+	if counter != 0 {
+		c.JSON(403, gin.H{
+			"server": 0,
+		})
+	} else {
+		str := fmt.Sprintf("'%s', '%s', %d, '%s', '%s', '%s'",
+			usr.Name, usr.Nickname, 5, usr.Description, usr.Login, services.HashPassword(usr.Password))
+		_, err := DB.Exec("INSERT INTO" + " users (name, nickname, rate, description, login, password) VALUES (" + str + ")")
+		if err != nil {
+			log.Print(err)
+			c.JSON(500, gin.H{
+				"server": -1,
+			})
+		} else {
+			// User created
+			var id int
+			row := DB.QueryRow(fmt.Sprintf("select user_id from users where login='%s'", usr.Login))
+			if err != nil {
+				log.Print(err)
+				DB.Exec(fmt.Sprintf("delete from users where login='%s'", usr.Login))
+				c.JSON(500, gin.H{
+					"server": -1,
+				})
+			}
+			row.Scan(&id)
+			c.JSON(200, gin.H{
+				"id": id,
+			})
+		}
+	}
+}
+
+func regEvent(c *gin.Context) {
+	var event Event
+	c.BindJSON(&event)
+
+	str := fmt.Sprintf("'%s', '%s', '%s', '%t', '%s', '%s', '%d'",
+		event.Name, event.Description, event.Date, event.Online, event.MainTheme, event.Url, event.CreatorID)
+	var eventID int
+	err := DB.QueryRow("INSERT INTO events (name, description, date, online, main_theme, url, creator_id) VALUES (" + str + ") RETURNING event_id").Scan(&eventID)
+
+	if err != nil {
+		log.Println(err)
+		c.JSON(500, gin.H{
+			"server": -1,
+		})
+	} else {
+		c.JSON(200, gin.H{
+			"id": eventID,
+		})
+	}
+}
+
+func regTeam(c *gin.Context) {
+	var team Team
+	var teamId int
+	creatorId := c.Query("creator")
+	creator, _ := strconv.Atoi(creatorId)
+	c.BindJSON(&team)
+
+	//str := fmt.Sprintf("'%s', 5, '%s', '%s', CURRENT_TIMESTAMP, '%s'", team.Name, team.Description, team.Rules, team.Place)
+	//err := DB.QueryRow("INSERT INTO team (name, rate, description, rules, reg_date, place) VALUES (" + str + ") RETURNING team_id").Scan(&teamId)
+	query := "INSERT INTO team (name, rate, description, rules, reg_date, place) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP, $5) RETURNING team_id"
+	err := DB.QueryRow(query, team.Name, 5, team.Description, team.Rules, team.Place).Scan(&teamId)
+
+	if err != nil {
+		log.Println(err)
+		c.JSON(500, gin.H{
+			"server": -1,
+		})
+	} else {
+		// adding creator to user_team
+		query = "insert into user_team (team_id, user_id, role, date_of_entry, hidden) values ($1, $2, $3, CURRENT_TIMESTAMP, $4)"
+		_, err1 := DB.Exec(query, teamId, creator, "Creator", false)
+		if err1 != nil {
+			log.Println(err1)
+			_, err2 := DB.Exec(fmt.Sprintf("delete from team where team_id=%s", strconv.Itoa(teamId)))
+			if err2 != nil {
+				log.Println(err2)
+			}
+			c.JSON(500, gin.H{
+				"server": -1,
+			})
+			return
+		}
+		c.JSON(200, gin.H{
+			"id": teamId,
+		})
 	}
 }

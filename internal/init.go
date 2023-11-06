@@ -24,4 +24,8 @@ func Init(r *gin.Engine) {
 	r.GET("/global-tags", getAllGlobalTags)
 	r.GET("/tags/global-tag/:id", getTagsByGlobalTag)
 	r.GET("/users", getAllUsers)
+
+	r.POST("/users", regUser)
+	r.POST("/events", regEvent)
+	r.POST("/teams", regTeam)
 }
