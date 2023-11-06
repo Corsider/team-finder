@@ -341,7 +341,7 @@ func regUser(c *gin.Context) {
 			}
 			row.Scan(&id)
 			c.JSON(200, gin.H{
-				"id": id,
+				"user_id": id,
 			})
 		}
 	}
@@ -363,7 +363,7 @@ func regEvent(c *gin.Context) {
 		})
 	} else {
 		c.JSON(200, gin.H{
-			"id": eventID,
+			"event_id": eventID,
 		})
 	}
 }
@@ -401,7 +401,7 @@ func regTeam(c *gin.Context) {
 			return
 		}
 		c.JSON(200, gin.H{
-			"id": teamId,
+			"team_id": teamId,
 		})
 	}
 }
