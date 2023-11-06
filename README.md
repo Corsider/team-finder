@@ -1,9 +1,8 @@
 # team-finder
 Team Finder project server
 
-```
-docker-compose up -d --build
-```
+Run ```init.bat``` to start docker and fill DB with testing data \
+\
 .env params:
 ```
 POSTGRES_USER = 
