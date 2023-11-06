@@ -405,3 +405,87 @@ func regTeam(c *gin.Context) {
 		})
 	}
 }
+
+func addTagsToUser(c *gin.Context) {
+	var tags TagArray
+	var userId int
+	var count int
+	usr := c.Query("user_id")
+	userId, _ = strconv.Atoi(usr)
+	c.BindJSON(&tags)
+	query := "insert into users_tags (tag_id, user_id) values ($1, $2)"
+	queryTest := "select count(*) from users_tags where tag_id=$1 and user_id=$2"
+	for _, tag := range tags.Tags {
+		DB.QueryRow(queryTest, tag, userId).Scan(&count)
+		if count > 0 {
+			continue
+		}
+		_, err := DB.Exec(query, tag, userId)
+		if err != nil {
+			log.Println(err)
+			c.JSON(500, gin.H{
+				"server": -1,
+			})
+			return
+		}
+	}
+	c.JSON(200, gin.H{
+		"server": 1,
+	})
+}
+
+func addTagsToTeam(c *gin.Context) {
+	var tags TagArray
+	var teamId int
+	var count int
+	team := c.Query("team_id")
+	teamId, _ = strconv.Atoi(team)
+	c.BindJSON(&tags)
+	query := "insert into team_tags (tag_id, team_id) values ($1, $2)"
+	queryTest := "select count(*) from team_tags where tag_id=$1 and team_id=$2"
+	for _, tag := range tags.Tags {
+		DB.QueryRow(queryTest, tag, teamId).Scan(&count)
+		if count > 0 {
+			continue
+		}
+		_, err := DB.Exec(query, tag, teamId)
+		if err != nil {
+			log.Println(err)
+			c.JSON(500, gin.H{
+				"server": -1,
+			})
+			return
+		}
+	}
+	c.JSON(200, gin.H{
+		"server": 1,
+	})
+}
+
+func addTagsToEvent(c *gin.Context) {
+	var tags TagArray
+	var eventId int
+	var count int
+	event := c.Query("event_id")
+	eventId, _ = strconv.Atoi(event)
+	c.BindJSON(&tags)
+	query := "insert into events_tags (event_id, tag_id) values ($1, $2)"
+	queryTest := "select count(*) from events_tags where tag_id=$1 and event_id=$2"
+	for _, tag := range tags.Tags {
+		DB.QueryRow(queryTest, tag, eventId).Scan(&count)
+		if count > 0 {
+			continue
+		}
+		_, err := DB.Exec(query, eventId, tag)
+		if err != nil {
+			log.Println(err)
+			c.JSON(500, gin.H{
+				"server": -1,
+			})
+			return
+		}
+	}
+	c.JSON(200, gin.H{
+		"server": 1,
+	})
+}

@@ -1,5 +1,7 @@
 package internal
 
+import "github.com/lib/pq"
+
 type Event struct {
 	EventID     int    `db:"event_id" json:"event_id"`
 	Name        string `db:"name" json:"name"`
@@ -69,4 +71,8 @@ type UserTeam struct {
 	Role        string `json:"role" db:"role"`
 	DateOfEntry string `json:"date_of_entry" db:"date_of_entry"`
 	Hidden      bool   `json:"hidden" db:"hidden"`
+}
+
+type TagArray struct {
+	Tags pq.Int32Array `json:"tags"`
 }

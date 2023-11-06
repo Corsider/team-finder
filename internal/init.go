@@ -28,4 +28,10 @@ func Init(r *gin.Engine) {
 	r.POST("/users", regUser)
 	r.POST("/events", regEvent)
 	r.POST("/teams", regTeam)
+
+	r.POST("/tags/user", addTagsToUser)
+	r.POST("/tags/team", addTagsToTeam)
+	r.POST("/tags/event", addTagsToEvent)
+
+	// TODO: remove tags from user/team/event
 }
