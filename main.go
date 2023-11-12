@@ -1,39 +1,27 @@
 package main
 
 import (
-	"database/sql"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"log"
-	"os"
-	"team-finder/internal"
-	"team-finder/services"
+	"team-finder/api/routes"
+	"team-finder/boot"
+	"time"
 )
 
-var DB *sql.DB
-
 func main() {
-	log.Println("Connecting to postgres...")
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatal("No .env file found")
-	}
-	DB = services.Connect(os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"),
-		os.Getenv("POSTGRES_DB"))
-	defer DB.Close()
-
-	err := DB.Ping()
-	if err != nil {
-		log.Fatal(err)
-	} else {
-		log.Println("CONNECTED")
-		internal.DB = DB
-	}
+	app := boot.App()
+	env := app.Env
+	db := app.DB
+	defer app.Close()
+	timeout := time.Duration(env.Timeout) * time.Second
 
 	r := gin.Default()
-	internal.Init(r)
-	err = r.Run(os.Getenv("HOST"))
+
+	routes.Init(env, timeout, db, r)
+
+	err := r.Run(env.ServerAddress)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Error while starting gin engine", err)
 	}
 }
