@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"strconv"
-	"team-finder/services"
+	"team-finder/internal/utils"
 )
 
 func setup(c *gin.Context) {
@@ -321,7 +321,7 @@ func regUser(c *gin.Context) {
 		})
 	} else {
 		str := fmt.Sprintf("'%s', '%s', %d, '%s', '%s', '%s'",
-			usr.Name, usr.Nickname, 5, usr.Description, usr.Login, services.HashPassword(usr.Password))
+			usr.Name, usr.Nickname, 5, usr.Description, usr.Login, utils.HashPassword(usr.Password))
 		_, err := DB.Exec("INSERT INTO" + " users (name, nickname, rate, description, login, password) VALUES (" + str + ")")
 		if err != nil {
 			log.Print(err)

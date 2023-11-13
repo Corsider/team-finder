@@ -4,16 +4,18 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"team-finder/postgres"
 )
 
 func NewPostgresDB(env *Env) *sql.DB {
 	psinfo := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", env.DBHost, env.DBPort, env.DBUser, env.DBPass, env.DBName)
-	database, err := sql.Open("postgres", psinfo)
+	database := postgres.NewConnection(psinfo)
+	err := database.Reference().Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("Connected to Postgres")
-	return database
+	return database.Reference()
 }
 
 func ClosePostgresConnection(db *sql.DB) {

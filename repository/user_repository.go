@@ -4,16 +4,17 @@ import (
 	"database/sql"
 	"github.com/gin-gonic/gin"
 	"team-finder/domain"
+	"team-finder/postgres"
 )
 
 type userRepository struct {
-	database *sql.DB
+	database postgres.Database //*sql.DB
 	table    string
 }
 
 func NewUserRepository(db *sql.DB, table string) domain.UserRepository {
 	return &userRepository{
-		database: db,
+		database: &postgres.PostgresDB{DB: db},
 		table:    table,
 	}
 }
@@ -29,6 +30,8 @@ func (u *userRepository) GetById(c *gin.Context) (domain.User, error) {
 }
 
 func (u *userRepository) GetByLogin(c *gin.Context, login string) (domain.User, error) {
-	//todo
-	return domain.User{}, nil
+	//table := u.table
+	//rows, err := u.database.SelectAllFromX()
+	// TODO
+	panic("")
 }
