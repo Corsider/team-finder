@@ -10,9 +10,12 @@ import (
 
 func Init(env *boot.Env, timeout time.Duration, DB *sql.DB, r *gin.Engine) {
 	public := r.Group("")
-	NewUserLoginRouter(env, timeout, DB, public)
+	NewUserLogRouter(env, timeout, DB, public)
 	//
 	protected := r.Group("")
 	protected.Use(middleware.JWT(env.TokenSecret))
-	//
+	NewUserRouter(env, timeout, DB, protected)
+	NewTagRouter(env, timeout, DB, protected)
+	NewTeamRouter(env, timeout, DB, protected)
+	NewEventRouter(env, timeout, DB, protected)
 }

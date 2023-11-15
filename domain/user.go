@@ -1,7 +1,5 @@
 package domain
 
-import "github.com/gin-gonic/gin"
-
 const (
 	TableUser = "users"
 )
@@ -17,7 +15,34 @@ type User struct {
 }
 
 type UserRepository interface {
-	Create(c *gin.Context, user *User) error
-	GetById(c *gin.Context) (User, error)
-	GetByLogin(c *gin.Context, login string) (User, error)
+	Create(user *User) error
+	GetById(id int) (User, error)
+	GetByLogin(login string) (User, error)
+	GetUsersByTeamId(id int) ([]User, error)
+	GetAll() ([]User, error)
+}
+
+type LoginRequest struct {
+	Login    string `form:"login" binding:"required,login"`
+	Password string `form:"password" binding:"required"`
+}
+
+type LoginResponse struct {
+	Token string `json:"token"`
+}
+
+type UserResponse struct {
+	User User `json:"user"`
+}
+
+type UsersResponse struct {
+	Users []User `json:"users"`
+}
+
+type UserUsecase interface {
+	GetUserByLogin(login string) (User, error)
+	CreateToken(user *User, secret string, exp int) (token string, err error)
+	GetById(id int) (User, error)
+	GetUsersByTeamId(id int) ([]User, error)
+	GetAll() ([]User, error)
 }

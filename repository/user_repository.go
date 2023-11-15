@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"github.com/gin-gonic/gin"
 	"team-finder/domain"
 	"team-finder/postgres"
 )
@@ -19,19 +18,29 @@ func NewUserRepository(db *sql.DB, table string) domain.UserRepository {
 	}
 }
 
-func (u *userRepository) Create(c *gin.Context, user *domain.User) error {
+func (u *userRepository) Create(user *domain.User) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (u *userRepository) GetById(c *gin.Context) (domain.User, error) {
+func (u *userRepository) GetById(id int) (domain.User, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (u *userRepository) GetByLogin(c *gin.Context, login string) (domain.User, error) {
+func (u *userRepository) GetByLogin(login string) (domain.User, error) {
 	//table := u.table
 	//rows, err := u.database.SelectAllFromX()
 	// TODO
+	panic("")
+}
+
+func (u *userRepository) GetUsersByTeamId(id int) ([]domain.User, error) {
+	// todo
+	panic("")
+}
+
+func (u *userRepository) GetAll() ([]domain.User, error) {
+	// todo
 	panic("")
 }
