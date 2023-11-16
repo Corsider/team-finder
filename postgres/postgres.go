@@ -11,10 +11,12 @@ type Database interface {
 	SelectAllFromX(X string) (*sql.Rows, error)
 	SelectAllFromXWhereYeqZ(X, Y, Z string) (*sql.Rows, error)
 	SelectXFromYWhereZeqN(X, Y, Z, N string) (*sql.Rows, error)
+	Select1FromXWhereYeqZ(X, Y, Z string) *sql.Row
 	SelectXFromYWhereZeqNorMeqC(X, Y, Z, N, M, C string) (*sql.Rows, error)
 	DeleteFromXWhereYeqZ(X, Y, Z string) error
 	InsertIntoXYValuesZ(X, Y, Z string) error
 	InsertIntoXYValuesZReturningN(X, Y, Z string) (interface{}, error)
+	SelectCountFromXWhereYeqZ(X, Y, Z string) (int, error)
 }
 
 type PostgresDB struct {
@@ -48,6 +50,11 @@ func (db *PostgresDB) SelectXFromYWhereZeqN(X, Y, Z, N string) (*sql.Rows, error
 	return db.DB.Query(query, X, Y, Z, N)
 }
 
+func (db *PostgresDB) Select1FromXWhereYeqZ(X, Y, Z string) *sql.Row {
+	query := "select * from $1 where $2=$3"
+	return db.DB.QueryRow(query, X, Y, Z)
+}
+
 func (db *PostgresDB) SelectXFromYWhereZeqNorMeqC(X, Y, Z, N, M, C string) (*sql.Rows, error) {
 	query := "select $1 from $2 where $3=$4 or $5=$6"
 	return db.DB.Query(query, X, Y, Z, N, M, C)
@@ -68,4 +75,14 @@ func (db *PostgresDB) InsertIntoXYValuesZReturningN(X, Y, Z string) (interface{}
 	var returned interface{}
 	err := db.DB.QueryRow(query, X, Y, Z).Scan(&returned)
 	return returned, err
+}
+
+func (db *PostgresDB) SelectCountFromXWhereYeqZ(X, Y, Z string) (int, error) {
+	query := "select count(*) from $1 where $2=$3"
+	var count int
+	err := db.DB.QueryRow(query, X, Y, Z).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }

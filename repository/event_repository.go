@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"strconv"
 	"team-finder/domain"
 	"team-finder/postgres"
 )
@@ -19,11 +20,25 @@ func NewEventRepository(db *sql.DB, table string) domain.EventRepository {
 }
 
 func (er *eventRepository) GetAll() ([]domain.Event, error) {
-	// todo
-	panic("")
+	rows, err := er.database.SelectAllFromX(er.table)
+	if err != nil {
+		return nil, err
+	}
+	events := []domain.Event{}
+	for rows.Next() {
+		var event domain.Event
+		rows.Scan(&event.EventID, &event.Name, &event.Description, &event.Date, &event.Online, &event.MainTheme, &event.Url, &event.CreatorID)
+		events = append(events, event)
+	}
+	return events, nil
 }
 
 func (er *eventRepository) GetEventById(eventId int) (domain.Event, error) {
-	// todo
-	panic("")
+	rows := er.database.Select1FromXWhereYeqZ(er.table, "event_id", strconv.Itoa(eventId))
+	var event domain.Event
+	err := rows.Scan(&event.EventID, &event.Name, &event.Description, &event.Date, &event.Online, &event.MainTheme, &event.Url, &event.CreatorID)
+	if err != nil {
+		return domain.Event{}, err
+	}
+	return event, nil
 }

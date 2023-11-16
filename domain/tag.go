@@ -20,9 +20,9 @@ type TagRepository interface {
 	GetAll() ([]Tag, error)
 	GetByGlobalTagId(id int) ([]Tag, error)
 	GetByEventId(id int) ([]Tag, error)
-	AddTagToUser(c *gin.Context) error
-	AddTagToTeam(c *gin.Context) error
-	AddTagToEvent(c *gin.Context) error
+	//AddTagToUser(c *gin.Context) error
+	//AddTagToTeam(c *gin.Context) error
+	//AddTagToEvent(c *gin.Context) error
 	GetUserTagCount(userId, tagId int) (int, error)
 	GetTeamTagCount(teamId, tagId int) (int, error)
 	GetEventTagCount(eventId, tagId int) (int, error)

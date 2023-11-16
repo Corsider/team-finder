@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"strconv"
 	"team-finder/domain"
 	"team-finder/postgres"
 )
@@ -24,23 +25,46 @@ func (u *userRepository) Create(user *domain.User) error {
 }
 
 func (u *userRepository) GetById(id int) (domain.User, error) {
-	//TODO implement me
-	panic("implement me")
+	row := u.database.Select1FromXWhereYeqZ(u.table, "user_id", strconv.Itoa(id))
+	var usr domain.User
+	err := row.Scan(&usr.UserId, &usr.Name, &usr.Nickname, &usr.Rate, &usr.Description, &usr.Login, &usr.Password)
+	if err != nil {
+		return domain.User{}, err
+	}
+	return usr, nil
 }
 
 func (u *userRepository) GetByLogin(login string) (domain.User, error) {
-	//table := u.table
 	//rows, err := u.database.SelectAllFromX()
-	// TODO
-	panic("")
+	panic("inop")
 }
 
 func (u *userRepository) GetUsersByTeamId(id int) ([]domain.User, error) {
-	// todo
-	panic("")
+	rows, err := u.database.SelectAllFromXWhereYeqZ("user_team", "team_id", strconv.Itoa(id))
+	if err != nil {
+		return nil, err
+	}
+	users := []domain.User{}
+	for rows.Next() {
+		var usr domain.User
+		rows.Scan(&usr.UserId, &usr.Name, &usr.Nickname, &usr.Rate, &usr.Description, &usr.Login, &usr.Password)
+		usr.Password = ""
+		users = append(users, usr)
+	}
+	return users, nil
 }
 
 func (u *userRepository) GetAll() ([]domain.User, error) {
-	// todo
-	panic("")
+	rows, err := u.database.SelectAllFromX(u.table)
+	if err != nil {
+		return nil, err
+	}
+	users := []domain.User{}
+	for rows.Next() {
+		var usr domain.User
+		rows.Scan(&usr.UserId, &usr.Name, &usr.Nickname, &usr.Rate, &usr.Description, &usr.Login, &usr.Password)
+		usr.Password = ""
+		users = append(users, usr)
+	}
+	return users, nil
 }

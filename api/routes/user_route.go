@@ -18,7 +18,7 @@ func NewUserLogRouter(env *boot.Env, timeout time.Duration, db *sql.DB, group *g
 		Env:         env,
 	}
 	group.POST("/users/login", sc.Login)
-	group.POST("/users/signup", sc.Signup) // todo
+	//group.POST("/users/signup", sc.Signup) // todo
 }
 
 func NewUserRouter(env *boot.Env, timeout time.Duration, db *sql.DB, group *gin.RouterGroup) {
