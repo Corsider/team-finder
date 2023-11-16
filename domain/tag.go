@@ -9,7 +9,7 @@ const (
 type Tag struct {
 	TagID       int    `db:"tag_id" json:"tag_id"`
 	Activity    string `db:"activity" json:"activity"`
-	GlobalTagID int    `db:"globaltag_id" json:"globaltag_id"`
+	GlobalTagID int    `db:"global_tag_id" json:"global_tag_id"`
 }
 
 type TagRepository interface {

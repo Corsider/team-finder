@@ -51,10 +51,7 @@ func (lc *UserController) GetById(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
 		return
 	}
-	response := domain.UserResponse{
-		User: user,
-	}
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, user)
 }
 
 func (lc *UserController) GetUsersByTeamId(c *gin.Context) {
@@ -63,7 +60,7 @@ func (lc *UserController) GetUsersByTeamId(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, &domain.UsersResponse{Users: users})
+	c.JSON(http.StatusOK, users)
 }
 
 func (lc *UserController) GetAll(c *gin.Context) {
@@ -72,5 +69,5 @@ func (lc *UserController) GetAll(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, domain.UsersResponse{Users: users})
+	c.JSON(http.StatusOK, users)
 }

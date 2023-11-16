@@ -20,7 +20,7 @@ func (t *TagController) GetAll(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, domain.TagAllResponse{Tags: tags})
+	c.JSON(http.StatusOK, tags)
 }
 
 func (t *TagController) GetByUserId(c *gin.Context) {
@@ -29,7 +29,7 @@ func (t *TagController) GetByUserId(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, domain.TagAllResponse{Tags: tags})
+	c.JSON(http.StatusOK, tags)
 }
 
 func (t *TagController) GetByTeamId(c *gin.Context) {
@@ -38,7 +38,7 @@ func (t *TagController) GetByTeamId(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, domain.TagAllResponse{Tags: tags})
+	c.JSON(http.StatusOK, tags)
 }
 
 func (t *TagController) GetByEventId(c *gin.Context) {
@@ -47,7 +47,7 @@ func (t *TagController) GetByEventId(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, domain.TagAllResponse{Tags: tags})
+	c.JSON(http.StatusOK, tags)
 }
 
 func (t *TagController) GetByGlobalTagId(c *gin.Context) {
@@ -56,7 +56,7 @@ func (t *TagController) GetByGlobalTagId(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, domain.TagAllResponse{Tags: tags})
+	c.JSON(http.StatusOK, tags)
 }
 
 //////////////////// POST ////////////////////

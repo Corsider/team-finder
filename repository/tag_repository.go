@@ -21,14 +21,17 @@ func NewTagRepository(db *sql.DB, table string) domain.TagRepository {
 }
 
 func (t *tagRepository) GetByUserId(id int) ([]domain.Tag, error) {
-	rows, err := t.database.SelectAllFromXWhereYeqZ("users_tag", "user_id", strconv.Itoa(id))
+	rows, err := t.database.SelectAllFromXWhereYeqZ("users_tags", "user_id", strconv.Itoa(id))
 	if err != nil {
 		return nil, err
 	}
 	tags := []domain.Tag{}
+	var usr_tag domain.UsersTags
 	for rows.Next() {
 		var tag domain.Tag
-		rows.Scan(&tag.TagID, &tag.Activity, &tag.GlobalTagID)
+		rows.Scan(&usr_tag.TagId, &usr_tag.UserId)
+		row := t.database.Select1FromXWhereYeqZ("tag", "tag_id", strconv.Itoa(usr_tag.TagId))
+		row.Scan(&tag.TagID, &tag.Activity, &tag.GlobalTagID)
 		tags = append(tags, tag)
 	}
 	return tags, nil
@@ -40,9 +43,12 @@ func (t *tagRepository) GetByTeamId(id int) ([]domain.Tag, error) {
 		return nil, err
 	}
 	tags := []domain.Tag{}
+	var teamTag domain.TeamsTags
 	for rows.Next() {
 		var tag domain.Tag
-		rows.Scan(&tag.TagID, &tag.Activity, &tag.GlobalTagID)
+		rows.Scan(&teamTag.TagId, &teamTag.TeamId)
+		row := t.database.Select1FromXWhereYeqZ("tag", "tag_id", strconv.Itoa(teamTag.TagId))
+		row.Scan(&tag.TagID, &tag.Activity, &tag.GlobalTagID)
 		tags = append(tags, tag)
 	}
 	return tags, nil
@@ -63,7 +69,7 @@ func (t *tagRepository) GetAll() ([]domain.Tag, error) {
 }
 
 func (t *tagRepository) GetByGlobalTagId(id int) ([]domain.Tag, error) {
-	rows, err := t.database.SelectAllFromXWhereYeqZ(t.table, "globaltag_id", strconv.Itoa(id))
+	rows, err := t.database.SelectAllFromXWhereYeqZ(t.table, "global_tag_id", strconv.Itoa(id))
 	if err != nil {
 		return nil, err
 	}
@@ -82,9 +88,12 @@ func (t *tagRepository) GetByEventId(id int) ([]domain.Tag, error) {
 		return nil, err
 	}
 	tags := []domain.Tag{}
+	var eventTag domain.EventTags
 	for rows.Next() {
 		var tag domain.Tag
-		rows.Scan(&tag.TagID, &tag.Activity, &tag.GlobalTagID)
+		rows.Scan(&eventTag.EventId, &eventTag.TagId)
+		row := t.database.Select1FromXWhereYeqZ("tag", "tag_id", strconv.Itoa(eventTag.TagId))
+		row.Scan(&tag.TagID, &tag.Activity, &tag.GlobalTagID)
 		tags = append(tags, tag)
 	}
 	return tags, nil

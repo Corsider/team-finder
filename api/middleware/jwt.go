@@ -18,7 +18,7 @@ func JWT(secret string) gin.HandlerFunc {
 			if authorized {
 				userId, err1 := utils.ExtractID(authToken, secret)
 				if err1 != nil {
-					c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: err1.Error()})
+					c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Error: err1.Error()})
 					c.Abort()
 					return
 				}
@@ -26,11 +26,11 @@ func JWT(secret string) gin.HandlerFunc {
 				c.Next()
 				return
 			}
-			c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: err.Error()})
+			c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Error: err.Error()})
 			c.Abort()
 			return
 		}
-		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Message: "Unauthorized"})
+		c.JSON(http.StatusUnauthorized, domain.ErrorResponse{Error: "Unauthorized"})
 		c.Abort()
 	}
 }

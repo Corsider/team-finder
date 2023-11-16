@@ -32,3 +32,15 @@ func (t *teamUsecase) GetByUserId(id int) ([]domain.Team, error) {
 func (t *teamUsecase) GetByEventId(id int) ([]domain.Team, error) {
 	return t.teamRepository.GetByEventId(id)
 }
+
+func (t *teamUsecase) RegTeam(request domain.TeamsRegRequest) (int, error) {
+	return t.teamRepository.RegTeam(request)
+}
+
+func (t *teamUsecase) AddUserToTeam(userId int, teamId int) error {
+	return t.teamRepository.AddUserToTeam(userId, teamId)
+}
+
+func (t *teamUsecase) DeleteTeamById(teamId int) error {
+	return t.teamRepository.DeleteTeamById(teamId)
+}

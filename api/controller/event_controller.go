@@ -20,7 +20,7 @@ func (ec *EventController) GetEventById(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, domain.EventResponse{Event: event})
+	c.JSON(http.StatusOK, event)
 }
 
 func (ec *EventController) GetAll(c *gin.Context) {
@@ -29,7 +29,7 @@ func (ec *EventController) GetAll(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, domain.EventsResponse{Events: events})
+	c.JSON(http.StatusOK, events)
 }
 
 func (ec *EventController) RegEvent(c *gin.Context) {
