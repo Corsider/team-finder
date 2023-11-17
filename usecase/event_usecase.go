@@ -24,3 +24,7 @@ func (eu *eventUsecase) GetAll() ([]domain.Event, error) {
 func (eu *eventUsecase) GetEventById(eventId int) (domain.Event, error) {
 	return eu.eventRepository.GetEventById(eventId)
 }
+
+func (eu *eventUsecase) RegEvent(request domain.EventRegRequest, creatorId int) (int, error) {
+	return eu.eventRepository.RegEvent(request, creatorId)
+}

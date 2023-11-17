@@ -15,8 +15,11 @@ type Database interface {
 	SelectXFromYWhereZeqNorMeqC(X, Y, Z, N, M, C string) (*sql.Rows, error)
 	DeleteFromXWhereYeqZ(X, Y, Z string) error
 	InsertIntoXYValuesZ(X, Y, Z string) error
+	InsertParametrizedIntoXYValuesZ(X, Y, Z string, params ...interface{}) error
 	InsertIntoXYValuesZReturningN(X, Y, Z, N string) (interface{}, error)
-	SelectCountFromXWhereYeqZ(X, Y, Z string) (int, error)
+	InsertParametrizedIntoXYValuesZReturningN(X, Y, Z, N string, params ...interface{}) (interface{}, error)
+	SelectCountFromXWhereYeqZ(X string, params ...interface{}) (int, error)
+	SelectCountFromXWhereYeqZorNeqM(X string, params ...interface{}) (int, error)
 }
 
 type PostgresDB struct {
@@ -77,6 +80,12 @@ func (db *PostgresDB) InsertIntoXYValuesZ(X, Y, Z string) error {
 	return utils.Second(db.DB.Exec("insert into " + X + " (" + Y + ") values (" + Z + ")"))
 }
 
+func (db *PostgresDB) InsertParametrizedIntoXYValuesZ(X, Y, Z string, params ...interface{}) error {
+	query := "insert into " + X + " (" + Y + ") values (" + Z + ")"
+	_, err := db.DB.Exec(query, params...)
+	return err
+}
+
 func (db *PostgresDB) InsertIntoXYValuesZReturningN(X, Y, Z, N string) (interface{}, error) {
 	//query := "insert into $1($2) values ($3) returning $4"
 	var returned interface{}
@@ -84,18 +93,28 @@ func (db *PostgresDB) InsertIntoXYValuesZReturningN(X, Y, Z, N string) (interfac
 	return returned, err
 }
 
-func (db *PostgresDB) InsertParametrizedIntoXYValuesZReturningN(X, Y, Z, N string, params ...string) (interface{}, error) {
+func (db *PostgresDB) InsertParametrizedIntoXYValuesZReturningN(X, Y, Z, N string, params ...interface{}) (interface{}, error) {
 	//query := "insert into $1($2) values ($3) returning $4"
 	var returned interface{}
 	query := "insert into " + X + " (" + Y + ") values (" + Z + ") returning " + N
-	err := db.DB.QueryRow(query, params).Scan(&returned)
+	err := db.DB.QueryRow(query, params...).Scan(&returned)
 	return returned, err
 }
 
-func (db *PostgresDB) SelectCountFromXWhereYeqZ(X, Y, Z string) (int, error) {
-	//query := "select count(*) from $1 where $2=$3"
+func (db *PostgresDB) SelectCountFromXWhereYeqZ(X string, params ...interface{}) (int, error) {
+	query := "select count(*) from " + X + " where $1=$2"
 	var count int
-	err := db.DB.QueryRow("select count(*) from " + X + " where " + Y + "=" + Z).Scan(&count)
+	err := db.DB.QueryRow(query, params...).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (db *PostgresDB) SelectCountFromXWhereYeqZorNeqM(X string, params ...interface{}) (int, error) {
+	var count int
+	query := "select count(*) from " + X + " where $1=$2 or $3=$4"
+	err := db.DB.QueryRow(query, params...).Scan(&count)
 	if err != nil {
 		return 0, err
 	}

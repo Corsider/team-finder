@@ -53,7 +53,7 @@ func (t *TeamController) GetAllTeams(c *gin.Context) {
 func (t *TeamController) RegTeam(c *gin.Context) {
 	var request domain.TeamsRegRequest
 	c.BindJSON(&request)
-	creatorId := c.Query("creator")
+	creatorId := c.Query("user_id")
 	creator, _ := strconv.Atoi(creatorId)
 
 	teamId, err := t.TeamUsecase.RegTeam(request)

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"team-finder/domain"
+	"team-finder/internal/utils"
 	"time"
 )
 
@@ -23,8 +24,7 @@ func (lu *userUsecase) GetUserByLogin(login string) (domain.User, error) {
 }
 
 func (lu *userUsecase) CreateToken(user *domain.User, secret string, exp int) (token string, err error) {
-	//TODO implement me
-	panic("implement me")
+	return utils.CreateToken(user, secret, exp)
 }
 
 func (lu *userUsecase) GetById(id int) (domain.User, error) {
@@ -37,4 +37,16 @@ func (lu *userUsecase) GetUsersByTeamId(id int) ([]domain.User, error) {
 
 func (lu *userUsecase) GetAll() ([]domain.User, error) {
 	return lu.userRepository.GetAll()
+}
+
+func (lu *userUsecase) CheckForExistence(nickname, login string) (int, error) {
+	return lu.userRepository.CheckForExistence(nickname, login)
+}
+
+func (lu *userUsecase) InsertUser(request domain.UserRegRequest) (int, error) {
+	return lu.userRepository.InsertUser(request)
+}
+
+func (lu *userUsecase) DeleteUserById(userId int) error {
+	return lu.userRepository.DeleteUserById(userId)
 }

@@ -30,4 +30,6 @@ func NewUserRouter(env *boot.Env, timeout time.Duration, db *sql.DB, group *gin.
 	group.GET("/users/:id", sc.GetById)
 	group.GET("/users/team/:id", sc.GetUsersByTeamId)
 	group.GET("/users", sc.GetAll)
+
+	group.POST("/users", sc.RegUser)
 }

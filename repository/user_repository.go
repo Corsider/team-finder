@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"strconv"
 	"team-finder/domain"
+	"team-finder/internal/utils"
 	"team-finder/postgres"
 )
 
@@ -67,4 +68,27 @@ func (u *userRepository) GetAll() ([]domain.User, error) {
 		users = append(users, usr)
 	}
 	return users, nil
+}
+
+func (u *userRepository) CheckForExistence(nickname, login string) (int, error) {
+	count, err := u.database.SelectCountFromXWhereYeqZorNeqM("users", "nickname", nickname, "login", login)
+	if err != nil {
+		return 0, err
+	}
+	return count, err
+}
+
+func (u *userRepository) InsertUser(request domain.UserRegRequest) (int, error) {
+	userId, err := u.database.InsertParametrizedIntoXYValuesZReturningN(u.table, "name, nickname, rate, description, login, password",
+		"$1, $2, 5, $3, $4, $5", "user_id", request.Name, request.Nickname, request.Description, request.Login,
+		utils.HashPassword(request.Password))
+	if err != nil {
+		return 0, err
+	}
+	return utils.First(strconv.Atoi(strconv.FormatInt(userId.(int64), 10))), nil
+}
+
+func (u *userRepository) DeleteUserById(userId int) error {
+	err := u.database.DeleteFromXWhereYeqZ(u.table, "user_id", strconv.Itoa(userId))
+	return err
 }

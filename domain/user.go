@@ -20,6 +20,9 @@ type UserRepository interface {
 	GetByLogin(login string) (User, error)
 	GetUsersByTeamId(id int) ([]User, error)
 	GetAll() ([]User, error)
+	CheckForExistence(nickname, login string) (int, error)
+	InsertUser(request UserRegRequest) (int, error)
+	DeleteUserById(userId int) error
 }
 
 type LoginRequest struct {
@@ -29,6 +32,19 @@ type LoginRequest struct {
 
 type LoginResponse struct {
 	Token string `json:"token"`
+}
+
+type UserRegRequest struct {
+	Name        string `form:"name" binding:"required"`
+	Nickname    string `form:"nickname" binding:"required"`
+	Description string `form:"description" binding:"required"`
+	Login       string `form:"login" binding:"required"`
+	Password    string `form:"password" binding:"required"`
+}
+
+type UserRegResponse struct {
+	UserId string `json:"user_id"`
+	Token  string `json:"token"`
 }
 
 type UserResponse struct {
@@ -45,4 +61,7 @@ type UserUsecase interface {
 	GetById(id int) (User, error)
 	GetUsersByTeamId(id int) ([]User, error)
 	GetAll() ([]User, error)
+	CheckForExistence(nickname, login string) (int, error)
+	InsertUser(request UserRegRequest) (int, error)
+	DeleteUserById(userId int) error
 }

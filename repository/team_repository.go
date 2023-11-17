@@ -79,17 +79,21 @@ func (t *teamRepository) GetByEventId(id int) ([]domain.Team, error) {
 }
 
 func (t *teamRepository) RegTeam(request domain.TeamsRegRequest) (int, error) {
-	teamId, err := t.database.InsertIntoXYValuesZReturningN(t.table, "name, description, rules, place, reg_date, rate",
-		request.Name+", "+request.Description+", "+request.Rules+", "+request.Place+", CURRENT_TIMESTAMP, 5", "team_id")
+	//teamId, err := t.database.InsertIntoXYValuesZReturningN(t.table, "name, description, rules, place, reg_date, rate",
+	//	request.Name+", "+request.Description+", "+request.Rules+", "+request.Place+", CURRENT_TIMESTAMP, 5", "team_id")
+	teamId, err := t.database.InsertParametrizedIntoXYValuesZReturningN(t.table, "name, description, rules, place, reg_date, rate",
+		"$1, $2, $3, $4, CURRENT_TIMESTAMP, 5", "team_id", request.Name, request.Description, request.Rules, request.Place)
 	if err != nil {
 		return 0, err
 	}
-	return utils.First(strconv.Atoi(teamId.(string))), nil
+	return utils.First(strconv.Atoi(strconv.FormatInt(teamId.(int64), 10))), nil
 }
 
 func (t *teamRepository) AddUserToTeam(userId int, teamId int) error {
-	err := t.database.InsertIntoXYValuesZ("user_team", "team_id, user_id, role, date_of_entry, hidden",
-		strconv.Itoa(teamId)+", "+strconv.Itoa(userId)+", "+"Creator, CURRENT_TIMESTAMP, false")
+	//err := t.database.InsertIntoXYValuesZ("user_team", "team_id, user_id, role, date_of_entry, hidden",
+	//	strconv.Itoa(teamId)+", "+strconv.Itoa(userId)+", "+"Creator, CURRENT_TIMESTAMP, false")
+	err := t.database.InsertParametrizedIntoXYValuesZ("user_team", "team_id, user_id, role, date_of_entry, hidden",
+		"$1, $2, 'Creator', CURRENT_TIMESTAMP, false", teamId, userId)
 	if err != nil {
 		return err
 	}

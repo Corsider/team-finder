@@ -33,5 +33,11 @@ func (ec *EventController) GetAll(c *gin.Context) {
 }
 
 func (ec *EventController) RegEvent(c *gin.Context) {
-	// todo
+	var request domain.EventRegRequest
+	eventId, err := ec.EventUsecase.RegEvent(request, utils.First(strconv.Atoi(c.Param("user_id"))))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, domain.EventRegResponse{EventId: strconv.Itoa(eventId)})
 }

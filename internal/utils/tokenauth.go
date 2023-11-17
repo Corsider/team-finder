@@ -3,6 +3,8 @@ package utils
 import (
 	"fmt"
 	jwt "github.com/golang-jwt/jwt/v4"
+	"team-finder/domain"
+	"time"
 )
 
 func IsAuthorized(requestToken string, secret string) (bool, error) {
@@ -37,4 +39,21 @@ func ExtractID(requestToken, secret string) (string, error) {
 	}
 
 	return claims["id"].(string), nil
+}
+
+func CreateToken(user *domain.User, secret string, expiry int) (Token string, err error) {
+	exp := time.Now().Add(time.Hour * time.Duration(expiry)).Unix()
+	claims := &domain.JWTClaims{
+		Login: user.Login,
+		ID:    fmt.Sprintf("%x", user.UserId),
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: exp,
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	t, err := token.SignedString([]byte(secret))
+	if err != nil {
+		return "", err
+	}
+	return t, err
 }
