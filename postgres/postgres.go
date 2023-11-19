@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"team-finder/domain"
 	"team-finder/internal/utils"
 )
 
@@ -21,6 +22,8 @@ type Database interface {
 	InsertParametrizedIntoXYValuesZReturningN(X, Y, Z, N string, params ...interface{}) (interface{}, error)
 	SelectCountFromXWhereYeqZ(X, Y string, params ...interface{}) (int, error)
 	SelectCountFromXWhereYeqZorNeqM(X, Y, Z string, params ...interface{}) (int, error)
+	UpdateXSetYZWhereNeqM(X, Y, Z, N, M string, decodeTo interface{}) (interface{}, error)
+	UpdateNXSetYZWhereNeqM(X, Y, N, M string, decodeTo interface{}, params ...interface{}) (interface{}, error)
 }
 
 type PostgresDB struct {
@@ -115,10 +118,40 @@ func (db *PostgresDB) SelectCountFromXWhereYeqZ(X, Y string, params ...interface
 func (db *PostgresDB) SelectCountFromXWhereYeqZorNeqM(X, Y, Z string, params ...interface{}) (int, error) {
 	var count int
 	query := "select count(*) as count from " + X + " where " + Y + "=$1 or " + Z + "=$2"
-	log.Println(fmt.Sprintf(query, params...))
 	err := db.DB.QueryRow(query, params...).Scan(&count)
 	if err != nil {
 		return 0, err
 	}
 	return count, nil
+}
+
+func (db *PostgresDB) UpdateXSetYZWhereNeqM(X, Y, Z, N, M string, decodeTo interface{}) (interface{}, error) {
+	query := fmt.Sprintf("UPDATE %s SET %s = $1 WHERE %s = $2 RETURNING *", X, Y, N)
+	row := db.DB.QueryRow(query, Z, M)
+	switch v := decodeTo.(type) {
+	case *domain.User:
+		err := row.Scan(&v.UserId, &v.Name, &v.Nickname, &v.Rate, &v.Description, &v.Login, &v.Password)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	default:
+		return nil, fmt.Errorf("unsupported type")
+	}
+}
+
+func (db *PostgresDB) UpdateNXSetYZWhereNeqM(X, Y, N, M string, decodeTo interface{}, params ...interface{}) (interface{}, error) {
+	query := fmt.Sprintf("UPDATE %s SET (%s) = ($1) WHERE %s = %s RETURNING *", X, Y, N, M)
+	row := db.DB.QueryRow(query, params...)
+	log.Println(fmt.Sprintf(query, params...))
+	switch v := decodeTo.(type) {
+	case domain.User:
+		err := row.Scan(&v.UserId, &v.Name, &v.Nickname, &v.Rate, &v.Description, &v.Login, &v.Password)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
+	default:
+		return nil, fmt.Errorf("unsupported type")
+	}
 }

@@ -18,7 +18,7 @@ func NewUserLogRouter(env *boot.Env, timeout time.Duration, db *sql.DB, group *g
 		Env:         env,
 	}
 	group.POST("/users/login", sc.Login)
-	//group.POST("/users/signup", sc.Signup) // todo
+	group.POST("/users", sc.RegUser)
 }
 
 func NewUserRouter(env *boot.Env, timeout time.Duration, db *sql.DB, group *gin.RouterGroup) {
@@ -30,6 +30,5 @@ func NewUserRouter(env *boot.Env, timeout time.Duration, db *sql.DB, group *gin.
 	group.GET("/users/:id", sc.GetById)
 	group.GET("/users/team/:id", sc.GetUsersByTeamId)
 	group.GET("/users", sc.GetAll)
-
-	group.POST("/users", sc.RegUser)
+	group.POST("/users/update/:id", sc.UpdateUser)
 }
