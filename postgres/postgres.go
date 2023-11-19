@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"team-finder/internal/utils"
 )
@@ -18,8 +19,8 @@ type Database interface {
 	InsertParametrizedIntoXYValuesZ(X, Y, Z string, params ...interface{}) error
 	InsertIntoXYValuesZReturningN(X, Y, Z, N string) (interface{}, error)
 	InsertParametrizedIntoXYValuesZReturningN(X, Y, Z, N string, params ...interface{}) (interface{}, error)
-	SelectCountFromXWhereYeqZ(X string, params ...interface{}) (int, error)
-	SelectCountFromXWhereYeqZorNeqM(X string, params ...interface{}) (int, error)
+	SelectCountFromXWhereYeqZ(X, Y string, params ...interface{}) (int, error)
+	SelectCountFromXWhereYeqZorNeqM(X, Y, Z string, params ...interface{}) (int, error)
 }
 
 type PostgresDB struct {
@@ -101,8 +102,8 @@ func (db *PostgresDB) InsertParametrizedIntoXYValuesZReturningN(X, Y, Z, N strin
 	return returned, err
 }
 
-func (db *PostgresDB) SelectCountFromXWhereYeqZ(X string, params ...interface{}) (int, error) {
-	query := "select count(*) from " + X + " where $1=$2"
+func (db *PostgresDB) SelectCountFromXWhereYeqZ(X, Y string, params ...interface{}) (int, error) {
+	query := "select count(*) as count from " + X + " where " + Y + "=$1"
 	var count int
 	err := db.DB.QueryRow(query, params...).Scan(&count)
 	if err != nil {
@@ -111,9 +112,10 @@ func (db *PostgresDB) SelectCountFromXWhereYeqZ(X string, params ...interface{})
 	return count, nil
 }
 
-func (db *PostgresDB) SelectCountFromXWhereYeqZorNeqM(X string, params ...interface{}) (int, error) {
+func (db *PostgresDB) SelectCountFromXWhereYeqZorNeqM(X, Y, Z string, params ...interface{}) (int, error) {
 	var count int
-	query := "select count(*) from " + X + " where $1=$2 or $3=$4"
+	query := "select count(*) as count from " + X + " where " + Y + "=$1 or " + Z + "=$2"
+	log.Println(fmt.Sprintf(query, params...))
 	err := db.DB.QueryRow(query, params...).Scan(&count)
 	if err != nil {
 		return 0, err

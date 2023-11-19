@@ -71,7 +71,7 @@ func (u *userRepository) GetAll() ([]domain.User, error) {
 }
 
 func (u *userRepository) CheckForExistence(nickname, login string) (int, error) {
-	count, err := u.database.SelectCountFromXWhereYeqZorNeqM("users", "nickname", nickname, "login", login)
+	count, err := u.database.SelectCountFromXWhereYeqZorNeqM("users", "nickname", "login", nickname, login)
 	if err != nil {
 		return 0, err
 	}
