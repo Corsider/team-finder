@@ -50,3 +50,7 @@ func (lu *userUsecase) InsertUser(request domain.UserRegRequest) (int, error) {
 func (lu *userUsecase) DeleteUserById(userId int) error {
 	return lu.userRepository.DeleteUserById(userId)
 }
+
+func (lu *userUsecase) UpdateUser(request domain.UpdateRequest, userId int) (domain.User, error) {
+	return lu.userRepository.UpdateUser(request, userId)
+}

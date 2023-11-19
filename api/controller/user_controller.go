@@ -113,3 +113,36 @@ func (lc *UserController) RegUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, domain.UserRegResponse{UserId: strconv.Itoa(userId), Token: token})
 }
+
+func (lc *UserController) UpdateUser(c *gin.Context) {
+	var request domain.UpdateRequest
+	err0 := c.BindJSON(&request)
+	if err0 != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err0.Error()})
+		return
+	}
+
+	current, err := lc.UserUsecase.GetById(utils.First(strconv.Atoi(c.Param("id"))))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	if request.Name == "" {
+		request.Name = current.Name
+	}
+	if request.Nickname == "" {
+		request.Nickname = current.Nickname
+	}
+	if request.Description == "" {
+		request.Description = current.Description
+	}
+
+	user, err1 := lc.UserUsecase.UpdateUser(request, utils.First(strconv.Atoi(c.Param("id"))))
+	if err1 != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err1.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, user)
+}

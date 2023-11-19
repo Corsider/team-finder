@@ -23,11 +23,18 @@ type UserRepository interface {
 	CheckForExistence(nickname, login string) (int, error)
 	InsertUser(request UserRegRequest) (int, error)
 	DeleteUserById(userId int) error
+	UpdateUser(request UpdateRequest, userId int) (User, error)
 }
 
 type LoginRequest struct {
 	Login    string `form:"login" binding:"required,login"`
 	Password string `form:"password" binding:"required"`
+}
+
+type UpdateRequest struct {
+	Name        string `form:"name"`
+	Nickname    string `form:"nickname"`
+	Description string `form:"description"`
 }
 
 type LoginResponse struct {
@@ -64,4 +71,5 @@ type UserUsecase interface {
 	CheckForExistence(nickname, login string) (int, error)
 	InsertUser(request UserRegRequest) (int, error)
 	DeleteUserById(userId int) error
+	UpdateUser(request UpdateRequest, userId int) (User, error)
 }

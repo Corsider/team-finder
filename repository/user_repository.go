@@ -92,3 +92,12 @@ func (u *userRepository) DeleteUserById(userId int) error {
 	err := u.database.DeleteFromXWhereYeqZ(u.table, "user_id", strconv.Itoa(userId))
 	return err
 }
+
+func (u *userRepository) UpdateUser(request domain.UpdateRequest, userId int) (domain.User, error) {
+	entity, err := u.database.UpdateNXSetYZWhereNeqM("users", "user_id", strconv.Itoa(userId), []string{"name", "nickname", "description"}, domain.User{}, request.Name, request.Nickname, request.Description)
+	if err != nil {
+		return domain.User{}, err
+	}
+	usr, _ := entity.(domain.User)
+	return usr, nil
+}
