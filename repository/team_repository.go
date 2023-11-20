@@ -103,3 +103,74 @@ func (t *teamRepository) AddUserToTeam(userId int, teamId int) error {
 func (t *teamRepository) DeleteTeamById(teamId int) error {
 	return t.database.DeleteFromXWhereYeqZ(t.table, "team_id", strconv.Itoa(teamId))
 }
+
+func (t *teamRepository) FilterTeams(onlyUser bool, tags []int, myTeam int, sortBy string, asc bool, from, to int) ([]domain.Team, error) {
+	var order string
+	switch sortBy {
+	case "count":
+		order = "(select count(*) from user_team where team_id = team.team_id)"
+	case "activity":
+		order = "(select count(*) from team_event where team_id = team.team_id)"
+	case "name":
+		order = "name"
+	}
+	if onlyUser {
+		rows, err := t.database.SelectAllFromXWhereYinZandNinMandGinHOrderByO(t.table, "team_id", "select team_id from user_team where user_id=$1",
+			"team_id", "select team_id from team_tags where tag_id in $2", "select count(*) from user_team where team_id=team.team_id",
+			"$3 and $4", order, myTeam, tags, from, to, asc)
+		if err != nil {
+			return nil, err
+		}
+		teams := []domain.Team{}
+		for rows.Next() {
+			var team domain.Team
+			rows.Scan(&team.TeamID, &team.Name, &team.Rate, &team.Description, &team.Rules, &team.RegDate, &team.Place)
+			teams = append(teams, team)
+		}
+		return teams, nil
+	} else {
+		rows, err := t.database.SelectAllFromXNinMandGinHOrderByO(t.table, "team_id", "select team_id from team_tags where tag_id in $1",
+			"select count(*) from user_team where team_id=team.team_id", "$2 and $3", order, myTeam, tags, from, to, asc)
+		if err != nil {
+			return nil, err
+		}
+		teams := []domain.Team{}
+		for rows.Next() {
+			var team domain.Team
+			rows.Scan(&team.TeamID, &team.Name, &team.Rate, &team.Description, &team.Rules, &team.RegDate, &team.Place)
+			teams = append(teams, team)
+		}
+		return teams, nil
+	}
+}
+
+func (t *teamRepository) FilterTeamUser(order string, tags []int, myTeam int, asc bool, from, to int) ([]domain.Team, error) {
+	rows, err := t.database.SelectAllFromXWhereYinZandNinMandGinHOrderByO(t.table, "team_id", "select team_id from user_team where user_id=$1",
+		"team_id", "select team_id from team_tags where tag_id in $2", "select count(*) from user_team where team_id=team.team_id",
+		"$3 and $4", order, myTeam, tags, from, to, asc)
+	if err != nil {
+		return nil, err
+	}
+	teams := []domain.Team{}
+	for rows.Next() {
+		var team domain.Team
+		rows.Scan(&team.TeamID, &team.Name, &team.Rate, &team.Description, &team.Rules, &team.RegDate, &team.Place)
+		teams = append(teams, team)
+	}
+	return teams, nil
+}
+
+func (t *teamRepository) FilterTeamNoUser(order string, tags []int, myTeam int, asc bool, from, to int) ([]domain.Team, error) {
+	rows, err := t.database.SelectAllFromXNinMandGinHOrderByO(t.table, "team_id", "select team_id from team_tags where tag_id in $1",
+		"select count(*) from user_team where team_id=team.team_id", "$2 and $3", order, myTeam, tags, from, to, asc)
+	if err != nil {
+		return nil, err
+	}
+	teams := []domain.Team{}
+	for rows.Next() {
+		var team domain.Team
+		rows.Scan(&team.TeamID, &team.Name, &team.Rate, &team.Description, &team.Rules, &team.RegDate, &team.Place)
+		teams = append(teams, team)
+	}
+	return teams, nil
+}

@@ -41,3 +41,24 @@ func (ec *EventController) RegEvent(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, domain.EventRegResponse{EventId: strconv.Itoa(eventId)})
 }
+
+func (ec *EventController) AddTeamToEvent(c *gin.Context) {
+	eventId := utils.First(strconv.Atoi(c.Param("event_id")))
+	teamId := utils.First(strconv.Atoi(c.Param("team_id")))
+	err := ec.EventUsecase.AddTeamToEvent(eventId, teamId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, domain.NormalResponse{Server: "1"})
+}
+
+func (ec *EventController) DeleteEvent(c *gin.Context) {
+	eventId := utils.First(strconv.Atoi(c.Param("id")))
+	err := ec.EventUsecase.DeleteEvent(eventId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, domain.NormalResponse{Server: "1"})
+}

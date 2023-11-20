@@ -22,6 +22,7 @@ func NewTeamRouter(env *boot.Env, timeout time.Duration, db *sql.DB, group *gin.
 	group.GET("/teams/event/:id", sc.GetTeamsByEvent)
 	group.GET("/teams", sc.GetAllTeams)
 
-	// POST
 	group.POST("/teams", sc.RegTeam)
+	group.PUT("/teams/:team_id/add-user/:user_id", sc.AddUserToTeam)
+	group.POST("/teams/filter", sc.FilterTeams)
 }

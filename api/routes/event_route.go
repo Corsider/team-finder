@@ -20,4 +20,7 @@ func NewEventRouter(env *boot.Env, timeout time.Duration, db *sql.DB, group *gin
 	group.GET("/event/:id", sc.GetEventById)
 	group.GET("/events", sc.GetAll)
 	group.POST("/events", sc.RegEvent)
+
+	group.PUT("/events/:event_id/add-team/:team_id", sc.AddTeamToEvent)
+	group.DELETE("/events/:id", sc.DeleteEvent)
 }

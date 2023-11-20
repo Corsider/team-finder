@@ -52,3 +52,21 @@ func (er *eventRepository) RegEvent(request domain.EventRegRequest, creatorId in
 	}
 	return utils.First(strconv.Atoi(strconv.FormatInt(eventId.(int64), 10))), nil
 }
+
+func (er *eventRepository) AddTeamToEvent(eventId, teamId int) error {
+	err := er.database.InsertParametrizedIntoXYValuesZ(domain.TableTeamEvent, "event_id, team_id, reg_time",
+		"$1, $2, CURRENT_TIMESTAMP", eventId, teamId)
+	return err
+}
+
+func (er *eventRepository) DeleteFromEvents(eventId int) error {
+	return er.database.DeleteFromXWhereYeqZ(er.table, "event_id", strconv.Itoa(eventId))
+}
+
+func (er *eventRepository) DeleteFromEventsTags(eventId int) error {
+	return er.database.DeleteFromXWhereYeqZ(domain.TableEventsTags, "event_id", strconv.Itoa(eventId))
+}
+
+func (er *eventRepository) DeleteFromTeamEvent(eventId int) error {
+	return er.database.DeleteFromXWhereYeqZ(domain.TableTeamEvent, "event_id", strconv.Itoa(eventId))
+}

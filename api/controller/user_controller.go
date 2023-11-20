@@ -21,8 +21,8 @@ func (lc *UserController) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, domain.ErrorResponse{Error: err.Error()})
 		return
 	}
-	user, err := lc.UserUsecase.GetUserByLogin(request.Login)
-	if err != nil {
+	user, err1 := lc.UserUsecase.GetUserByLogin(request.Login)
+	if err1 != nil {
 		c.JSON(http.StatusNotFound, domain.ErrorResponse{Error: "Not found"})
 		return
 	}

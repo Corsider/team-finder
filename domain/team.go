@@ -1,7 +1,8 @@
 package domain
 
 const (
-	TableTeam = "team"
+	TableTeam      = "team"
+	TableTeamEvent = "team_event"
 )
 
 type Team struct {
@@ -22,6 +23,8 @@ type TeamRepository interface {
 	RegTeam(request TeamsRegRequest) (int, error)
 	AddUserToTeam(userId int, teamId int) error
 	DeleteTeamById(teamId int) error
+	FilterTeamUser(order string, tags []int, myTeam int, asc bool, from, to int) ([]Team, error)
+	FilterTeamNoUser(order string, tags []int, myTeam int, asc bool, from, to int) ([]Team, error)
 }
 
 type TeamsAllResponse struct {
@@ -39,6 +42,10 @@ type TeamsRegResponse struct {
 	TeamId string `json:"team_id"`
 }
 
+type TeamsFilterRequest struct {
+	TagsId []int `json:"tags"`
+}
+
 type TeamUsecase interface {
 	GetAll() ([]Team, error)
 	GetByTeamId(id int) (Team, error)
@@ -47,4 +54,5 @@ type TeamUsecase interface {
 	RegTeam(request TeamsRegRequest) (int, error)
 	AddUserToTeam(userId int, teamId int) error
 	DeleteTeamById(teamId int) error
+	Filter(onlyUser bool, tags []int, myTeam int, sortBy string, asc bool, from, to int) ([]Team, error)
 }

@@ -70,3 +70,32 @@ func (t *TeamController) RegTeam(c *gin.Context) {
 		c.JSON(http.StatusOK, domain.TeamsRegResponse{TeamId: strconv.Itoa(teamId)})
 	}
 }
+
+func (t *TeamController) AddUserToTeam(c *gin.Context) {
+	teamId := utils.First(strconv.Atoi(c.Param("team_id")))
+	userId := utils.First(strconv.Atoi(c.Param("user_id")))
+	err := t.TeamUsecase.AddUserToTeam(userId, teamId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, domain.NormalResponse{Server: "1"})
+}
+
+func (t *TeamController) FilterTeams(c *gin.Context) {
+	myTeam := c.Query("my_team") // if empty - all teams, either filter only user's team. user_id is in my_team field
+	sortBy := c.Query("sort_by")
+	isAsc := c.Query("asc")
+	from := c.Query("from")
+	to := c.Query("to")
+
+	var tags domain.TeamsFilterRequest
+	c.BindJSON(&tags)
+
+	teams, err := t.TeamUsecase.Filter(myTeam != "", tags.TagsId, utils.First(strconv.Atoi(myTeam)), sortBy, isAsc == "true", utils.First(strconv.Atoi(from)), utils.First(strconv.Atoi(to)))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, teams)
+}

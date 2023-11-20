@@ -44,3 +44,28 @@ func (t *teamUsecase) AddUserToTeam(userId int, teamId int) error {
 func (t *teamUsecase) DeleteTeamById(teamId int) error {
 	return t.teamRepository.DeleteTeamById(teamId)
 }
+
+func (t *teamUsecase) Filter(onlyUser bool, tags []int, myTeam int, sortBy string, asc bool, from, to int) ([]domain.Team, error) {
+	var order string
+	switch sortBy {
+	case "count":
+		order = "(select count(*) from user_team where team_id = team.team_id)"
+	case "activity":
+		order = "(select count(*) from team_event where team_id = team.team_id)"
+	case "name":
+		order = "name"
+	}
+	if onlyUser {
+		teams, err := t.teamRepository.FilterTeamUser(order, tags, myTeam, asc, from, to)
+		if err != nil {
+			return nil, err
+		}
+		return teams, nil
+	} else {
+		teams, err := t.teamRepository.FilterTeamNoUser(order, tags, myTeam, asc, from, to)
+		if err != nil {
+			return nil, err
+		}
+		return teams, nil
+	}
+}

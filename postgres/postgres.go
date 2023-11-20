@@ -25,6 +25,8 @@ type Database interface {
 	SelectCountFromXWhereYeqZorNeqM(X, Y, Z string, params ...interface{}) (int, error)
 	UpdateXSetYZWhereNeqM(X, Y, Z, N, M string, decodeTo interface{}) (interface{}, error)
 	UpdateNXSetYZWhereNeqM(X, N, M string, columns []string, decodeTo interface{}, params ...interface{}) (interface{}, error)
+	SelectAllFromXWhereYinZandNinMandGinHOrderByO(X, Y, Z, N, M, G, H, O string, myTeam int, tags []int, from, to int, asc bool) (*sql.Rows, error)
+	SelectAllFromXNinMandGinHOrderByO(X, N, M, G, H, O string, myTeam int, tags []int, from, to int, asc bool) (*sql.Rows, error)
 }
 
 type PostgresDB struct {
@@ -162,4 +164,38 @@ func (db *PostgresDB) UpdateNXSetYZWhereNeqM(X, N, M string, columns []string, d
 	default:
 		return nil, fmt.Errorf("unsupported type")
 	}
+}
+
+func ArrayToString(a []int, delim string) string {
+	return "{" + strings.Trim(strings.Replace(fmt.Sprint(a), " ", delim, -1), "[]") + "}"
+}
+
+func (db *PostgresDB) SelectAllFromXWhereYinZandNinMandGinHOrderByO(X, Y, Z, N, M, G, H, O string, myTeam int, tags []int, from, to int, asc bool) (*sql.Rows, error) {
+	query := "select * from %s where %s in (%s) and (%s) in (%s) and (%s) between %s order by %s"
+	if asc {
+		query += " ASC"
+	} else {
+		query += " DESC"
+	}
+	log.Println(fmt.Sprintf(query, X, Y, Z, N, M, G, H, O, myTeam, ArrayToString(tags, ","), from, to))
+	rows, err := db.DB.Query(query, X, Y, Z, N, M, G, H, O, myTeam, ArrayToString(tags, ","), from, to)
+	if err != nil {
+		return nil, err
+	}
+	return rows, nil
+}
+
+func (db *PostgresDB) SelectAllFromXNinMandGinHOrderByO(X, N, M, G, H, O string, myTeam int, tags []int, from, to int, asc bool) (*sql.Rows, error) {
+	query := "select * from %s where (%s) in (%s) and (%s) between %s order by %s"
+	if asc {
+		query += " ASC"
+	} else {
+		query += " DESC"
+	}
+	//log.Println(fmt.Sprintf(query, X, N, M, G, H, O, myTeam, ArrayToString(tags, ","), from, to))
+	rows, err := db.DB.Query(query, X, N, M, G, H, O, myTeam, ArrayToString(tags, ","), from, to)
+	if err != nil {
+		return nil, err
+	}
+	return rows, nil
 }

@@ -1,7 +1,8 @@
 package domain
 
 const (
-	TableEvent = "event"
+	TableEvent      = "event"
+	TableEventsTags = "events_tags"
 )
 
 type Event struct {
@@ -40,10 +41,16 @@ type EventRepository interface {
 	GetAll() ([]Event, error)
 	GetEventById(eventId int) (Event, error)
 	RegEvent(request EventRegRequest, creatorId int) (int, error)
+	AddTeamToEvent(eventId, teamId int) error
+	DeleteFromEvents(eventId int) error
+	DeleteFromEventsTags(eventId int) error
+	DeleteFromTeamEvent(eventId int) error
 }
 
 type EventUsecase interface {
 	GetAll() ([]Event, error)
 	GetEventById(eventId int) (Event, error)
 	RegEvent(request EventRegRequest, creatorId int) (int, error)
+	AddTeamToEvent(eventId, teamId int) error
+	DeleteEvent(evenId int) error
 }
