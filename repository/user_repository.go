@@ -46,9 +46,12 @@ func (u *userRepository) GetUsersByTeamId(id int) ([]domain.User, error) {
 		return nil, err
 	}
 	users := []domain.User{}
+	var userTeam domain.UserTeam
 	for rows.Next() {
 		var usr domain.User
-		rows.Scan(&usr.UserId, &usr.Name, &usr.Nickname, &usr.Rate, &usr.Description, &usr.Login, &usr.Password)
+		rows.Scan(&userTeam.TeamId, &userTeam.UserId, &userTeam.Role, &userTeam.DateOfEntry, &userTeam.Hidden)
+		row := u.database.Select1FromXWhereYeqZ(u.table, "user_id", strconv.Itoa(userTeam.UserId))
+		row.Scan(&usr.UserId, &usr.Name, &usr.Nickname, &usr.Rate, &usr.Description, &usr.Login, &usr.Password)
 		usr.Password = ""
 		users = append(users, usr)
 	}

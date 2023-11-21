@@ -1,7 +1,8 @@
 package domain
 
 const (
-	TableUser = "users"
+	TableUser      = "users"
+	TableUsersTags = "users_tags"
 )
 
 type User struct {

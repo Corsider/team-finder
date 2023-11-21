@@ -6,6 +6,7 @@ import (
 	"team-finder/domain"
 	"team-finder/internal/utils"
 	"team-finder/postgres"
+	"time"
 )
 
 type eventRepository struct {
@@ -46,7 +47,7 @@ func (er *eventRepository) GetEventById(eventId int) (domain.Event, error) {
 
 func (er *eventRepository) RegEvent(request domain.EventRegRequest, creatorId int) (int, error) {
 	eventId, err := er.database.InsertParametrizedIntoXYValuesZReturningN(er.table, "name, description, date, online, main_theme, url, creator_id",
-		"$1, $2, $3, $4, $5, $6, $7", "event_id", request.Name, request.Description, request.Date, request.Online, request.MainTheme, request.Url, creatorId)
+		"$1, $2, $3, $4, $5, $6, $7", "event_id", request.Name, request.Description, utils.First(time.Parse("2006-01-02", request.Date)), request.Online, request.MainTheme, request.Url, creatorId)
 	if err != nil {
 		return 0, err
 	}

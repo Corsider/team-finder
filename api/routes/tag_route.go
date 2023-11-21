@@ -26,4 +26,8 @@ func NewTagRouter(env *boot.Env, timeout time.Duration, db *sql.DB, group *gin.R
 	group.POST("/tags/user", sc.PostTagsToUser)
 	group.POST("/tags/team", sc.PostTagsToTeam)
 	group.POST("/tags/event", sc.PostTagsToEvent)
+
+	group.DELETE("/tags/user/:id", sc.DeleteTagsFromUser)
+	group.DELETE("/tags/team/:id", sc.DeleteTagsFromTeam)
+	group.DELETE("/tags/event/:id", sc.DeleteTagsFromEvent)
 }

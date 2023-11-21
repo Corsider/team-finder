@@ -130,7 +130,7 @@ func (t *tagRepository) GetById(id int) (domain.Tag, error) {
 }
 
 func (t *tagRepository) GetUserTagCount(userId, tagId int) (int, error) {
-	count, err := t.database.SelectCountFromXWhereYeqZ("users_tags", strconv.Itoa(userId), strconv.Itoa(tagId))
+	count, err := t.database.SelectCountFromXWhereYeqZ("users_tags", "user_id=$1 and tag_id=$2", strconv.Itoa(userId), strconv.Itoa(tagId))
 	if err != nil {
 		return 0, err
 	}
@@ -138,7 +138,7 @@ func (t *tagRepository) GetUserTagCount(userId, tagId int) (int, error) {
 }
 
 func (t *tagRepository) GetTeamTagCount(teamId, tagId int) (int, error) {
-	count, err := t.database.SelectCountFromXWhereYeqZ("team_tags", strconv.Itoa(teamId), strconv.Itoa(tagId))
+	count, err := t.database.SelectCountFromXWhereYeqZ("team_tags", "team_id=$1 and tag_id=$2", strconv.Itoa(teamId), strconv.Itoa(tagId))
 	if err != nil {
 		return 0, err
 	}
@@ -146,15 +146,15 @@ func (t *tagRepository) GetTeamTagCount(teamId, tagId int) (int, error) {
 }
 
 func (t *tagRepository) GetEventTagCount(eventId, tagId int) (int, error) {
-	count, err := t.database.SelectCountFromXWhereYeqZ("events_tags", strconv.Itoa(eventId), strconv.Itoa(tagId))
+	count, err := t.database.SelectCountFromXWhereYeqZ("events_tags", "event_id=$1 and tag_id=$2", strconv.Itoa(eventId), strconv.Itoa(tagId))
 	if err != nil {
 		return 0, err
 	}
 	return count, nil
 }
 
-func (t *tagRepository) PostTagToUser(userId int, tag domain.Tag) error {
-	z := strconv.Itoa(tag.TagID) + ", " + strconv.Itoa(userId)
+func (t *tagRepository) PostTagToUser(userId int, tag int) error {
+	z := strconv.Itoa(tag) + ", " + strconv.Itoa(userId)
 	err := t.database.InsertIntoXYValuesZ("users_tags", "tag_id, user_id", z)
 	if err != nil {
 		return err
@@ -162,8 +162,8 @@ func (t *tagRepository) PostTagToUser(userId int, tag domain.Tag) error {
 	return nil
 }
 
-func (t *tagRepository) PostTagToTeam(teamId int, tag domain.Tag) error {
-	z := strconv.Itoa(tag.TagID) + ", " + strconv.Itoa(teamId)
+func (t *tagRepository) PostTagToTeam(teamId int, tag int) error {
+	z := strconv.Itoa(tag) + ", " + strconv.Itoa(teamId)
 	err := t.database.InsertIntoXYValuesZ("team_tags", "tag_id, team_id", z)
 	if err != nil {
 		return err
@@ -171,11 +171,23 @@ func (t *tagRepository) PostTagToTeam(teamId int, tag domain.Tag) error {
 	return nil
 }
 
-func (t *tagRepository) PostTagToEvent(eventId int, tag domain.Tag) error {
-	z := strconv.Itoa(eventId) + ", " + strconv.Itoa(tag.TagID)
+func (t *tagRepository) PostTagToEvent(eventId int, tag int) error {
+	z := strconv.Itoa(eventId) + ", " + strconv.Itoa(tag)
 	err := t.database.InsertIntoXYValuesZ("events_tags", "event_id, tag_id", z)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (t *tagRepository) DeleteTagFromUser(userId, tagId int) error {
+	return t.database.DeleteFromXWhereCond(domain.TableUsersTags, "user_id=$1 and tag_id=$2", userId, tagId)
+}
+
+func (t *tagRepository) DeleteTagFromTeam(teamId, tagId int) error {
+	return t.database.DeleteFromXWhereCond(domain.TableTeamTags, "team_id=$1 and tag_id=$2", teamId, tagId)
+}
+
+func (t *tagRepository) DeleteTagFromEvent(eventId, tagId int) error {
+	return t.database.DeleteFromXWhereCond(domain.TableEventsTags, "event_id=$1 and tag_id=$2", eventId, tagId)
 }

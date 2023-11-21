@@ -146,7 +146,7 @@ func (t *teamRepository) FilterTeams(onlyUser bool, tags []int, myTeam int, sort
 
 func (t *teamRepository) FilterTeamUser(order string, tags []int, myTeam int, asc bool, from, to int) ([]domain.Team, error) {
 	rows, err := t.database.SelectAllFromXWhereYinZandNinMandGinHOrderByO(t.table, "team_id", "select team_id from user_team where user_id=$1",
-		"team_id", "select team_id from team_tags where tag_id in $2", "select count(*) from user_team where team_id=team.team_id",
+		"team_id", "select team_id from team_tags where tag_id = ANY($2::int[])", "select count(*) from user_team where team_id=team.team_id",
 		"$3 and $4", order, myTeam, tags, from, to, asc)
 	if err != nil {
 		return nil, err
@@ -161,7 +161,7 @@ func (t *teamRepository) FilterTeamUser(order string, tags []int, myTeam int, as
 }
 
 func (t *teamRepository) FilterTeamNoUser(order string, tags []int, myTeam int, asc bool, from, to int) ([]domain.Team, error) {
-	rows, err := t.database.SelectAllFromXNinMandGinHOrderByO(t.table, "team_id", "select team_id from team_tags where tag_id in $1",
+	rows, err := t.database.SelectAllFromXNinMandGinHOrderByO(t.table, "team_id", "select team_id from team_tags where tag_id = ANY($1::int[])",
 		"select count(*) from user_team where team_id=team.team_id", "$2 and $3", order, myTeam, tags, from, to, asc)
 	if err != nil {
 		return nil, err

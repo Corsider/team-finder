@@ -1,18 +1,21 @@
 package domain
 
+import "time"
+
 const (
 	TableTeam      = "team"
 	TableTeamEvent = "team_event"
+	TableTeamTags  = "team_tags"
 )
 
 type Team struct {
-	TeamID      int     `db:"team_id" json:"team_id"`
-	Name        string  `db:"name" json:"name"`
-	Rate        float32 `db:"rate" json:"rate"`
-	Description string  `db:"description" json:"description"`
-	Rules       string  `db:"rules" json:"rules"`
-	RegDate     string  `db:"reg_date" json:"reg_date"`
-	Place       string  `db:"place" json:"place"`
+	TeamID      int       `db:"team_id" json:"team_id"`
+	Name        string    `db:"name" json:"name"`
+	Rate        float32   `db:"rate" json:"rate"`
+	Description string    `db:"description" json:"description"`
+	Rules       string    `db:"rules" json:"rules"`
+	RegDate     time.Time `db:"reg_date" json:"reg_date"`
+	Place       string    `db:"place" json:"place"`
 }
 
 type TeamRepository interface {

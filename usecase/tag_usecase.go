@@ -37,9 +37,9 @@ func (tu *tagUsecase) GetByGlobalTagId(id int) ([]domain.Tag, error) {
 	return tu.tagRepository.GetByGlobalTagId(id)
 }
 
-func (tu *tagUsecase) PostTagsToUser(id int, tags []domain.Tag) error {
+func (tu *tagUsecase) PostTagsToUser(id int, tags []int) error {
 	for _, tag := range tags {
-		count, err := tu.tagRepository.GetUserTagCount(id, tag.TagID)
+		count, err := tu.tagRepository.GetUserTagCount(id, tag)
 		if err != nil {
 			return err
 		}
@@ -54,9 +54,9 @@ func (tu *tagUsecase) PostTagsToUser(id int, tags []domain.Tag) error {
 	return nil
 }
 
-func (tu *tagUsecase) PostTagsToTeam(teamId int, tags []domain.Tag) error {
+func (tu *tagUsecase) PostTagsToTeam(teamId int, tags []int) error {
 	for _, tag := range tags {
-		count, err := tu.tagRepository.GetTeamTagCount(teamId, tag.TagID)
+		count, err := tu.tagRepository.GetTeamTagCount(teamId, tag)
 		if err != nil {
 			return err
 		}
@@ -71,9 +71,9 @@ func (tu *tagUsecase) PostTagsToTeam(teamId int, tags []domain.Tag) error {
 	return nil
 }
 
-func (tu *tagUsecase) PostTagsToEvent(eventId int, tags []domain.Tag) error {
+func (tu *tagUsecase) PostTagsToEvent(eventId int, tags []int) error {
 	for _, tag := range tags {
-		count, err := tu.tagRepository.GetEventTagCount(eventId, tag.TagID)
+		count, err := tu.tagRepository.GetEventTagCount(eventId, tag)
 		if err != nil {
 			return err
 		}
@@ -81,6 +81,57 @@ func (tu *tagUsecase) PostTagsToEvent(eventId int, tags []domain.Tag) error {
 			continue
 		}
 		err = tu.tagRepository.PostTagToEvent(eventId, tag)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (tu *tagUsecase) DeleteTagsFromUser(request domain.PostTagsRequest, userId int) error {
+	for _, tag := range request.Tags {
+		count, err := tu.tagRepository.GetUserTagCount(userId, tag)
+		if err != nil {
+			return err
+		}
+		if count == 0 {
+			continue
+		}
+		err = tu.tagRepository.DeleteTagFromUser(userId, tag)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (tu *tagUsecase) DeleteTagsFromTeam(request domain.PostTagsRequest, teamId int) error {
+	for _, tag := range request.Tags {
+		count, err := tu.tagRepository.GetTeamTagCount(teamId, tag)
+		if err != nil {
+			return err
+		}
+		if count == 0 {
+			continue
+		}
+		err = tu.tagRepository.DeleteTagFromTeam(teamId, tag)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (tu *tagUsecase) DeleteTagsFromEvent(request domain.PostTagsRequest, eventId int) error {
+	for _, tag := range request.Tags {
+		count, err := tu.tagRepository.GetEventTagCount(eventId, tag)
+		if err != nil {
+			return err
+		}
+		if count == 0 {
+			continue
+		}
+		err = tu.tagRepository.DeleteTagFromEvent(eventId, tag)
 		if err != nil {
 			return err
 		}

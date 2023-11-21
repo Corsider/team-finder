@@ -26,9 +26,12 @@ type TagRepository interface {
 	GetUserTagCount(userId, tagId int) (int, error)
 	GetTeamTagCount(teamId, tagId int) (int, error)
 	GetEventTagCount(eventId, tagId int) (int, error)
-	PostTagToUser(userId int, tag Tag) error
-	PostTagToTeam(teamId int, tag Tag) error
-	PostTagToEvent(eventId int, tag Tag) error
+	PostTagToUser(userId int, tag int) error
+	PostTagToTeam(teamId int, tag int) error
+	PostTagToEvent(eventId int, tag int) error
+	DeleteTagFromUser(userId, tagId int) error
+	DeleteTagFromTeam(teamId, tagId int) error
+	DeleteTagFromEvent(eventId, tagId int) error
 }
 
 type TagAllResponse struct {
@@ -36,7 +39,7 @@ type TagAllResponse struct {
 }
 
 type PostTagsRequest struct {
-	Tags []Tag `json:"tags"`
+	Tags []int `json:"tags"`
 }
 
 type TagUsecase interface {
@@ -45,7 +48,10 @@ type TagUsecase interface {
 	GetByTeamId(id int) ([]Tag, error)
 	GetByEventId(id int) ([]Tag, error)
 	GetByGlobalTagId(id int) ([]Tag, error)
-	PostTagsToUser(id int, tags []Tag) error
-	PostTagsToTeam(id int, tags []Tag) error
-	PostTagsToEvent(id int, tags []Tag) error
+	PostTagsToUser(id int, tags []int) error
+	PostTagsToTeam(id int, tags []int) error
+	PostTagsToEvent(id int, tags []int) error
+	DeleteTagsFromUser(request PostTagsRequest, userId int) error
+	DeleteTagsFromTeam(request PostTagsRequest, teamId int) error
+	DeleteTagsFromEvent(request PostTagsRequest, eventId int) error
 }

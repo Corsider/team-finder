@@ -1,28 +1,30 @@
 package domain
 
+import "time"
+
 const (
-	TableEvent      = "event"
+	TableEvent      = "events"
 	TableEventsTags = "events_tags"
 )
 
 type Event struct {
-	EventID     int    `db:"event_id" json:"event_id"`
-	Name        string `db:"name" json:"name"`
-	Description string `db:"description" json:"description"`
-	Date        string `db:"date" json:"date"`
-	Online      bool   `db:"online" json:"online"`
-	MainTheme   string `db:"main_theme" json:"main_theme"`
-	Url         string `db:"url" json:"url"`
-	CreatorID   int    `db:"creator_id" json:"creator_id"`
+	EventID     int       `db:"event_id" json:"event_id"`
+	Name        string    `db:"name" json:"name"`
+	Description string    `db:"description" json:"description"`
+	Date        time.Time `db:"date" json:"date"`
+	Online      bool      `db:"online" json:"online"`
+	MainTheme   string    `db:"main_theme" json:"main_theme"`
+	Url         string    `db:"url" json:"url"`
+	CreatorID   int       `db:"creator_id" json:"creator_id"`
 }
 
 type EventRegRequest struct {
 	Name        string `form:"name" binding:"required"`
 	Description string `form:"description" binding:"required"`
 	Date        string `form:"date" binding:"required"`
-	Online      string `form:"online" binding:"required"`
-	MainTheme   string `form:"main_theme" binding:"required"`
-	Url         string `form:"url" binding:"required"`
+	Online      bool   `form:"online" binding:"required"`
+	MainTheme   string `json:"main_theme" binding:"required"`
+	Url         string `form:"url"`
 }
 
 type EventRegResponse struct {
