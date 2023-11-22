@@ -20,10 +20,10 @@ type Event struct {
 
 type EventRegRequest struct {
 	Name        string `form:"name" binding:"required"`
-	Description string `form:"description" binding:"required"`
+	Description string `form:"description"`
 	Date        string `form:"date" binding:"required"`
-	Online      bool   `form:"online" binding:"required"`
-	MainTheme   string `json:"main_theme" binding:"required"`
+	Online      bool   `form:"online"`
+	MainTheme   string `json:"main_theme"`
 	Url         string `form:"url"`
 }
 

@@ -28,7 +28,7 @@ type UserRepository interface {
 }
 
 type LoginRequest struct {
-	Login    string `form:"login" binding:"required,login"`
+	Login    string `form:"login" binding:"required"`
 	Password string `form:"password" binding:"required"`
 }
 
@@ -39,13 +39,14 @@ type UpdateRequest struct {
 }
 
 type LoginResponse struct {
-	Token string `json:"token"`
+	Token  string `json:"token"`
+	UserId int    `json:"user_id"`
 }
 
 type UserRegRequest struct {
 	Name        string `form:"name" binding:"required"`
 	Nickname    string `form:"nickname" binding:"required"`
-	Description string `form:"description" binding:"required"`
+	Description string `form:"description"`
 	Login       string `form:"login" binding:"required"`
 	Password    string `form:"password" binding:"required"`
 }

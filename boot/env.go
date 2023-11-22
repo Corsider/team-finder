@@ -9,9 +9,9 @@ type Env struct {
 	ServerAddress    string `mapstructure:"SERVER_ADDRESS"`
 	DBHost           string `mapstructure:"DB_HOST"`
 	DBPort           int    `mapstructure:"DB_PORT"`
-	DBUser           string `mapstructure:"DB_USER"`
-	DBPass           string `mapstructure:"DB_PASS"`
-	DBName           string `mapstructure:"DB_NAME"`
+	DBUser           string `mapstructure:"POSTGRES_USER"`
+	DBPass           string `mapstructure:"POSTGRES_PASSWORD"`
+	DBName           string `mapstructure:"POSTGRES_DB"`
 	TokenSecret      string `mapstructure:"TOKEN_SECRET"`
 	TokenTimeoutHour int    `mapstructure:"TOKEN_TIMEOUT_HOUR"`
 	Timeout          int    `mapstructure:"TIMEOUT"`

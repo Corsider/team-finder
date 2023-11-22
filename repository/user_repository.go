@@ -37,7 +37,10 @@ func (u *userRepository) GetById(id int) (domain.User, error) {
 
 func (u *userRepository) GetByLogin(login string) (domain.User, error) {
 	//rows, err := u.database.SelectAllFromX()
-	panic("inop")
+	row := u.database.Select1FromXWhereYeqZ(u.table, "login", login)
+	var usr domain.User
+	row.Scan(&usr.UserId, &usr.Name, &usr.Nickname, &usr.Rate, &usr.Description, &usr.Login, &usr.Password)
+	return usr, nil
 }
 
 func (u *userRepository) GetUsersByTeamId(id int) ([]domain.User, error) {

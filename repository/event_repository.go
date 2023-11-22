@@ -30,6 +30,8 @@ func (er *eventRepository) GetAll() ([]domain.Event, error) {
 	for rows.Next() {
 		var event domain.Event
 		rows.Scan(&event.EventID, &event.Name, &event.Description, &event.Date, &event.Online, &event.MainTheme, &event.Url, &event.CreatorID)
+		event.Date, _ = time.Parse("2006-01-02", event.Date.String()[0:10])
+		//event.Date = event.Date[0:10]
 		events = append(events, event)
 	}
 	return events, nil

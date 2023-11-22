@@ -36,8 +36,8 @@ type TeamsAllResponse struct {
 
 type TeamsRegRequest struct {
 	Name        string `form:"name" binding:"required"`
-	Description string `from:"description" binding:"required"`
-	Rules       string `form:"rules" binding:"required"`
+	Description string `from:"description"`
+	Rules       string `form:"rules"`
 	Place       string `from:"place" binding:"required"`
 }
 

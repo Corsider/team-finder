@@ -34,15 +34,16 @@ func (eu *eventUsecase) AddTeamToEvent(eventId, teamId int) error {
 }
 
 func (eu *eventUsecase) DeleteEvent(eventId int) error {
-	err := eu.eventRepository.DeleteFromEvents(eventId)
-	if err != nil {
-		return err
-	}
-	err = eu.eventRepository.DeleteFromEventsTags(eventId)
+
+	err := eu.eventRepository.DeleteFromEventsTags(eventId)
 	if err != nil {
 		return err
 	}
 	err = eu.eventRepository.DeleteFromTeamEvent(eventId)
+	if err != nil {
+		return err
+	}
+	err = eu.eventRepository.DeleteFromEvents(eventId)
 	if err != nil {
 		return err
 	}

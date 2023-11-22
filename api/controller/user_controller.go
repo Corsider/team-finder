@@ -40,7 +40,8 @@ func (lc *UserController) Login(c *gin.Context) {
 		return
 	}
 	response := domain.LoginResponse{
-		Token: token,
+		Token:  token,
+		UserId: user.UserId,
 	}
 	c.JSON(http.StatusOK, response)
 }
