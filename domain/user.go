@@ -16,7 +16,6 @@ type User struct {
 }
 
 type UserRepository interface {
-	Create(user *User) error
 	GetById(id int) (User, error)
 	GetByLogin(login string) (User, error)
 	GetUsersByTeamId(id int) ([]User, error)

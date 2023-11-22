@@ -20,11 +20,6 @@ func NewUserRepository(db *sql.DB, table string) domain.UserRepository {
 	}
 }
 
-func (u *userRepository) Create(user *domain.User) error {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (u *userRepository) GetById(id int) (domain.User, error) {
 	row := u.database.Select1FromXWhereYeqZ(u.table, "user_id", strconv.Itoa(id))
 	var usr domain.User
