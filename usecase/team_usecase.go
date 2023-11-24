@@ -69,3 +69,7 @@ func (t *teamUsecase) Filter(onlyUser bool, tags []int, myTeam int, sortBy strin
 		return teams, nil
 	}
 }
+
+func (t *teamUsecase) RegTeamPG(request domain.TeamsRegRequestPG) (int, error) {
+	return t.teamRepository.RegTeamPG(request)
+}

@@ -174,3 +174,10 @@ func (t *teamRepository) FilterTeamNoUser(order string, tags []int, myTeam int, 
 	}
 	return teams, nil
 }
+
+func (t *teamRepository) RegTeamPG(request domain.TeamsRegRequestPG) (int, error) {
+	rows := t.database.SelectPGFuncAsX("regist_team", "$1, $2, $3, $4, $5", "team_id", request.Name, request.Description, request.Rules, request.Place, request.CreatorId)
+	var teamId int
+	err := rows.Scan(&teamId)
+	return teamId, err
+}

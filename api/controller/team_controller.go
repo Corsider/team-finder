@@ -51,24 +51,13 @@ func (t *TeamController) GetAllTeams(c *gin.Context) {
 }
 
 func (t *TeamController) RegTeam(c *gin.Context) {
-	var request domain.TeamsRegRequest
+	var request domain.TeamsRegRequestPG
 	c.BindJSON(&request)
-	creatorId := c.Query("user_id")
-	creator, _ := strconv.Atoi(creatorId)
-
-	teamId, err := t.TeamUsecase.RegTeam(request)
+	teamId, err := t.TeamUsecase.RegTeamPG(request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
-	} else {
-		// adding creator to user_team
-		err = t.TeamUsecase.AddUserToTeam(creator, teamId)
-		if err != nil {
-			t.TeamUsecase.DeleteTeamById(teamId) // bad!
-			c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
-			return
-		}
-		c.JSON(http.StatusOK, domain.TeamsRegResponse{TeamId: strconv.Itoa(teamId)})
 	}
+	c.JSON(http.StatusOK, domain.TeamsRegResponse{TeamId: strconv.Itoa(teamId)})
 }
 
 func (t *TeamController) AddUserToTeam(c *gin.Context) {

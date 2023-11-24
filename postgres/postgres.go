@@ -28,6 +28,7 @@ type Database interface {
 	UpdateNXSetYZWhereNeqM(X, N, M string, columns []string, decodeTo interface{}, params ...interface{}) (interface{}, error)
 	SelectAllFromXWhereYinZandNinMandGinHOrderByO(X, Y, Z, N, M, G, H, O string, myTeam int, tags []int, from, to int, asc bool) (*sql.Rows, error)
 	SelectAllFromXNinMandGinHOrderByO(X, N, M, G, H, O string, myTeam int, tags []int, from, to int, asc bool) (*sql.Rows, error)
+	SelectPGFuncAsX(funcName string, q string, toReturn string, params ...interface{}) *sql.Row
 }
 
 type PostgresDB struct {
@@ -221,4 +222,11 @@ func (db *PostgresDB) SelectAllFromXNinMandGinHOrderByO(X, N, M, G, H, O string,
 		return nil, err
 	}
 	return rows, nil
+}
+
+func (db *PostgresDB) SelectPGFuncAsX(funcName string, q string, toReturn string, params ...interface{}) *sql.Row {
+	query := "select %s(%s) as %s"
+	query = fmt.Sprintf(query, funcName, q, toReturn)
+	row := db.DB.QueryRow(query, params...)
+	return row
 }

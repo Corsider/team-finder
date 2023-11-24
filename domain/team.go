@@ -28,6 +28,7 @@ type TeamRepository interface {
 	DeleteTeamById(teamId int) error
 	FilterTeamUser(order string, tags []int, myTeam int, asc bool, from, to int) ([]Team, error)
 	FilterTeamNoUser(order string, tags []int, myTeam int, asc bool, from, to int) ([]Team, error)
+	RegTeamPG(request TeamsRegRequestPG) (int, error)
 }
 
 type TeamsAllResponse struct {
@@ -39,6 +40,14 @@ type TeamsRegRequest struct {
 	Description string `from:"description"`
 	Rules       string `form:"rules"`
 	Place       string `from:"place" binding:"required"`
+}
+
+type TeamsRegRequestPG struct {
+	Name        string `form:"name" binding:"required"`
+	Description string `from:"description"`
+	Rules       string `form:"rules"`
+	Place       string `from:"place" binding:"required"`
+	CreatorId   int    `json:"creator_id"`
 }
 
 type TeamsRegResponse struct {
@@ -58,4 +67,5 @@ type TeamUsecase interface {
 	AddUserToTeam(userId int, teamId int) error
 	DeleteTeamById(teamId int) error
 	Filter(onlyUser bool, tags []int, myTeam int, sortBy string, asc bool, from, to int) ([]Team, error)
+	RegTeamPG(request TeamsRegRequestPG) (int, error)
 }
