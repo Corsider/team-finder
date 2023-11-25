@@ -47,7 +47,7 @@ type TeamsRegRequestPG struct {
 	Description string `from:"description"`
 	Rules       string `form:"rules"`
 	Place       string `from:"place" binding:"required"`
-	CreatorId   int    `json:"creator_id"`
+	CreatorId   int    `json:"user_id"`
 }
 
 type TeamsRegResponse struct {
