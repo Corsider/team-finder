@@ -53,6 +53,8 @@ func (t *TeamController) GetAllTeams(c *gin.Context) {
 func (t *TeamController) RegTeam(c *gin.Context) {
 	var request domain.TeamsRegRequestPG
 	c.BindJSON(&request)
+	userId := c.Query("user_id")
+	request.CreatorId, _ = strconv.Atoi(userId)
 	teamId, err := t.TeamUsecase.RegTeamPG(request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrorResponse{Error: err.Error()})
